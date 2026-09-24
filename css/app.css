@@ -8,7 +8,7 @@
   --display:"Unbounded",system-ui,sans-serif; --ui:"Inter",system-ui,sans-serif; --mono:"JetBrains Mono",ui-monospace,monospace;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%}
+html{height:100%}
 body{background:var(--bg);color:var(--ink);font:500 14px/1.45 var(--ui);-webkit-font-smoothing:antialiased;overflow-x:hidden;display:flex;flex-direction:column;min-height:100vh}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 kbd{font:600 11px var(--mono);padding:2px 6px;border-radius:6px;background:rgba(255,255,255,.08);border:1px solid var(--line2);border-bottom-width:2px;margin:0 2px;color:var(--ink)}
@@ -212,7 +212,7 @@ input[type=range]:focus-visible::-webkit-slider-thumb{box-shadow:0 0 0 5px rgba(
 [hidden]{display:none!important}
 
 @media (max-width:960px){
-  .stage{grid-template-columns:1fr;padding:0 12px 12px}
+  .stage{grid-template-columns:1fr;padding:0 12px 12px;flex:none}
   .viewport{height:min(68vh,620px);min-height:360px}
   .top{padding:12px 14px 10px;gap:12px}
   .tag{display:none}
