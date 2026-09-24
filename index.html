@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Leapshot — Snap anything. Play it.</title>
+<meta name="description" content="Turn any photo into a playable platformer level in one second. Edge detection builds the terrain, a solver guarantees it's beatable, and you share levels as links. 100% in your browser.">
+<meta name="theme-color" content="#07060d">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Leapshot — Snap anything. Play it.">
+<meta property="og:description" content="Any photo becomes a playable platformer level. Run across your cat, your desk, your city. Share a link, race a friend. Runs entirely on your device.">
+<meta property="og:url" content="https://chris-wozniczek.github.io/leapshot/">
+<meta property="og:image" content="https://chris-wozniczek.github.io/leapshot/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Leapshot — Snap anything. Play it.">
+<meta name="twitter:description" content="Any photo becomes a playable platformer level. 100% in your browser, nothing uploaded.">
+<meta name="twitter:image" content="https://chris-wozniczek.github.io/leapshot/assets/og.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+<div class="ambient" aria-hidden="true"><i class="b1"></i><i class="b2"></i><i class="b3"></i></div>
+<div class="grain" aria-hidden="true"></div>
+
+<header class="top">
+  <a class="brand" href="./" aria-label="Leapshot home">
+    <svg class="mark" viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff4f8b"/><stop offset="1" stop-color="#ffb547"/></linearGradient></defs><rect x="2" y="2" width="28" height="28" rx="9" fill="url(#lg)"/><path d="M7 22h6l3-5 3 3 6-9" fill="none" stroke="#1a0b24" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="23" cy="9" r="2.2" fill="#1a0b24"/></svg>
+    <span class="word">Leapshot</span>
+  </a>
+  <p class="tag">Snap anything. <em>Play it.</em></p>
+  <div class="top-actions">
+    <button class="icon-btn" id="muteBtn" aria-label="Toggle sound" title="Sound (M)"><svg viewBox="0 0 24 24"><path class="on" d="M4 9v6h4l5 4V5L8 9H4zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4zM14 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6z"/><path class="off" d="M4 9v6h4l5 4V5L8 9H4zm15.6 3 2.1-2.1-1.4-1.4-2.1 2.1-2.1-2.1-1.4 1.4 2.1 2.1-2.1 2.1 1.4 1.4 2.1-2.1 2.1 2.1 1.4-1.4z"/></svg></button>
+    <a class="icon-btn" href="https://github.com/chris-wozniczek/leapshot" target="_blank" rel="noopener" aria-label="Source on GitHub" title="Source on GitHub"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-3.2 19.5c.5.1.7-.2.7-.5v-1.7c-2.8.6-3.4-1.3-3.4-1.3-.5-1.2-1.1-1.5-1.1-1.5-.9-.6.1-.6.1-.6 1 .1 1.5 1 1.5 1 .9 1.5 2.4 1.1 2.9.8.1-.7.4-1.1.6-1.3-2.2-.3-4.6-1.1-4.6-5a3.9 3.9 0 0 1 1-2.7 3.6 3.6 0 0 1 .1-2.7s.8-.3 2.8 1a9.6 9.6 0 0 1 5 0c1.9-1.3 2.8-1 2.8-1 .5 1.4.2 2.4.1 2.7a3.9 3.9 0 0 1 1 2.7c0 3.9-2.3 4.7-4.6 5 .4.3.7.9.7 1.9V21c0 .3.2.6.7.5A10 10 0 0 0 12 2z"/></svg></a>
+    <button class="icon-btn help" id="helpBtn" aria-label="How to play" title="How to play (?)">?</button>
+  </div>
+</header>
+
+<main class="stage">
+  <section class="viewport" id="viewport" aria-label="Game">
+    <canvas id="game"></canvas>
+
+    <div class="hud">
+      <div class="pill timer"><span class="dot rec" id="recDot" hidden></span><span id="timer">0:00.00</span></div>
+      <div class="pill coins"><svg viewBox="0 0 24 24"><path d="m12 2 2.9 6.6 7.1.6-5.4 4.7 1.6 7L12 17.2 5.8 21l1.6-7L2 9.2l7.1-.6z"/></svg><span id="coinCount">0/0</span></div>
+      <div class="pill best" id="bestPill"><span class="lbl">Best</span><span id="best">—</span></div>
+    </div>
+
+    <div class="banner" id="banner" hidden></div>
+    <div class="modechip" id="modeChip"><span class="pulse"></span><span id="modeText">Autopilot demo</span></div>
+
+    <div class="hint" id="hint"></div>
+
+    <div class="snapbar">
+      <button class="snap" id="snapBtn">
+        <span class="snap-ico"><svg viewBox="0 0 24 24"><path d="M9 4 7.5 6H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-2.5L15 4H9zm3 4.5a4.5 4.5 0 1 1 0 9 4.5 4.5 0 0 1 0-9zm0 2a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5z"/></svg></span>
+        <span class="snap-txt"><b>Snap a photo</b><small>upload · drop · paste</small></span>
+      </button>
+      <button class="round-btn" id="camBtn" aria-label="Use webcam" title="Use webcam"><svg viewBox="0 0 24 24"><path d="M15 8v-.5A2.5 2.5 0 0 0 12.5 5h-8A2.5 2.5 0 0 0 2 7.5v9A2.5 2.5 0 0 0 4.5 19h8a2.5 2.5 0 0 0 2.5-2.5V16l5 3.5V4.5L15 8z"/></svg></button>
+      <input type="file" id="fileIn" accept="image/*" hidden>
+    </div>
+
+    <div class="touch" id="touch" aria-hidden="true">
+      <div class="dpad"><button data-k="left">◀</button><button data-k="right">▶</button></div>
+      <button class="tj" data-k="jump">JUMP</button>
+    </div>
+
+    <div class="drop" id="drop"><div class="drop-card"><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0-4-4m4 4 4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><b>Drop to play it</b><small>Your photo never leaves this device</small></div></div>
+
+    <div class="win" id="win" hidden>
+      <div class="win-card">
+        <p class="eyebrow">Level cleared</p>
+        <h2 id="winTime">0:00.00</h2>
+        <p class="newbest" id="newBest" hidden>New personal best</p>
+        <p class="beat" id="beatMsg" hidden></p>
+        <div class="stats"><span><b id="winCoins">0/0</b> stars</span><span><b id="winDeaths">0</b> falls</span></div>
+        <div class="win-actions">
+          <button class="btn primary" id="againBtn">Run again <kbd>R</kbd></button>
+          <button class="btn" id="winShare">Copy challenge link</button>
+          <button class="btn ghost" id="winCard">Save card</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="busy" id="busy" hidden><span class="spinner"></span><span id="busyText">Reading your photo…</span></div>
+  </section>
+
+  <aside class="panel" aria-label="Controls">
+    <div class="card">
+      <h3>Try a photo</h3>
+      <div class="samples" id="samples"></div>
+      <p class="credit" id="credit"></p>
+    </div>
+
+    <div class="card">
+      <div class="row-h"><h3>Terrain</h3><span class="val" id="densVal">Balanced</span></div>
+      <input type="range" id="density" min="0" max="100" value="45" aria-label="Edge sensitivity">
+      <div class="scale"><span>Sparse · easy</span><span>Dense · wild</span></div>
+      <div class="solver" id="solver"><span class="ok-dot"></span><span id="solverText">Solving…</span></div>
+    </div>
+
+    <div class="card">
+      <h3>Tools</h3>
+      <div class="seg" id="tools" role="tablist">
+        <button data-tool="play" class="on" role="tab">Play</button>
+        <button data-tool="draw" role="tab">Draw</button>
+        <button data-tool="erase" role="tab">Erase</button>
+        <i class="seg-ind"></i>
+      </div>
+      <p class="mini" id="toolHint">Arrow keys / WASD to run, Space to jump. Hold for higher.</p>
+    </div>
+
+    <div class="card">
+      <h3>Share &amp; export</h3>
+      <button class="btn wide primary" id="shareBtn"><svg viewBox="0 0 24 24"><path d="M10.6 13.4a1 1 0 0 1 0-1.4l3.5-3.5a3 3 0 1 1 4.2 4.2l-2 2a1 1 0 1 1-1.4-1.4l2-2a1 1 0 0 0-1.4-1.4L12 13.4a1 1 0 0 1-1.4 0zm2.8-2.8a1 1 0 0 1 0 1.4l-3.5 3.5a3 3 0 0 1-4.2-4.2l2-2a1 1 0 1 1 1.4 1.4l-2 2a1 1 0 1 0 1.4 1.4l3.5-3.5a1 1 0 0 1 1.4 0z"/></svg>Copy challenge link</button>
+      <div class="two">
+        <button class="btn" id="recBtn"><span class="dot"></span><span id="recTxt">Record run</span></button>
+        <button class="btn" id="cardBtn">Level card</button>
+      </div>
+      <p class="mini privacy"><svg viewBox="0 0 24 24"><path d="M12 2 4 5v6c0 5 3.4 9.6 8 11 4.6-1.4 8-6 8-11V5l-8-3z"/></svg>Runs on your device. Photos are never uploaded; links carry a tiny thumbnail inside the URL itself.</p>
+    </div>
+  </aside>
+</main>
+
+<footer class="foot">Built in one week for <a href="https://hackyard.tech/yards/yard-3" target="_blank" rel="noopener">Hackyard Yard #3 · One Screen</a> by <a href="https://github.com/chris-wozniczek" target="_blank" rel="noopener">Krzysztof Woźniczek</a> with Devin. MIT.</footer>
+
+<div class="modal" id="help" hidden>
+  <div class="modal-card help-card" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+    <button class="x" data-close aria-label="Close">×</button>
+    <p class="eyebrow">How to play</p>
+    <h2 id="helpTitle">Your photo is the level.</h2>
+    <ol class="steps">
+      <li><span class="n">1</span><div><b>Snap, drop or paste a photo</b><p>Edges become platforms, dark corners grow spikes, bright highlights turn into stars.</p></div></li>
+      <li><span class="n">2</span><div><b>Run to the green flag</b><p><kbd>←</kbd><kbd>→</kbd> or <kbd>A</kbd><kbd>D</kbd> to run · <kbd>Space</kbd> to jump (hold = higher) · <kbd>R</kbd> restart. Thin glowing lines are jump-through.</p></div></li>
+      <li><span class="n">3</span><div><b>Beat the clock, share the link</b><p>Every level is proven beatable by a solver. Send it to a friend and race your time.</p></div></li>
+    </ol>
+    <p class="mini privacy"><svg viewBox="0 0 24 24"><path d="M12 2 4 5v6c0 5 3.4 9.6 8 11 4.6-1.4 8-6 8-11V5l-8-3z"/></svg>Everything runs on your device. Nothing is uploaded.</p>
+    <button class="btn primary wide" data-close>Let's go</button>
+  </div>
+</div>
+
+<div class="modal" id="cam" hidden>
+  <div class="modal-card cam-card" role="dialog" aria-modal="true" aria-label="Webcam snapshot">
+    <button class="x" data-close aria-label="Close">×</button>
+    <div class="cam-view"><video id="camVideo" playsinline muted></video><div class="cam-msg" id="camMsg">Starting camera…</div></div>
+    <div class="cam-actions"><button class="shutter" id="shutter" aria-label="Take photo"><i></i></button></div>
+    <p class="mini center">Frames stay in your browser.</p>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
