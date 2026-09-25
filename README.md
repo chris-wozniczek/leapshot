@@ -2,7 +2,7 @@
 
 **Snap anything. Play it.** Leapshot turns any photo into a playable platformer level, right in your browser. The photo stays visible as the level art, so you literally run across your desk, your cat or your city skyline.
 
-**[Play the live demo →](https://chris-wozniczek.github.io/leapshot/)**
+**[Play the live demo →](https://chris-wozniczek.github.io/leapshot/)** · [Watch the 36s demo video](https://chris-wozniczek.github.io/leapshot/assets/demo.mp4)
 
 ![Leapshot: a night-city photo turned into a platformer level](docs/hero.png)
 
